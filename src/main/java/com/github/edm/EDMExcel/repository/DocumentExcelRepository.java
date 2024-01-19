@@ -8,7 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class DocumentExcelRepository {
     private final static String pathToExcelList = "./ExampleList.xlsx";
@@ -70,31 +72,28 @@ public class DocumentExcelRepository {
             sheet.removeRow(sheet.getRow(sheet.getLastRowNum()));
         }
     }
-    public DocumentExcel getDocumentExcel(int id) {
+    public Sheet getConnectionToExcelTable() {
         try {
-            Workbook workbook = new XSSFWorkbook(new FileInputStream(pathToExcelList));
-            Sheet sheet = workbook.getSheet(nameOfList);
-            DocumentExcel document = new DocumentExcel();
-            Row row = sheet.getRow(id);
-            System.out.println(row.getRowNum());
-            Cell cellCode = row.getCell(0);
-            document.setId((int) cellCode.getNumericCellValue());
-            Cell cellNumberOfDocument = row.getCell(1);
-            document.setNumberOfDocument((int) cellNumberOfDocument.getNumericCellValue());
-            Cell cellKindOfDocument = row.getCell(2);
-            document.setKindOfDocument(cellKindOfDocument.getStringCellValue());
-            Cell cellStartDate = row.getCell(3);
-            document.setStartData(String.valueOf(cellStartDate.getDateCellValue()));
-            Cell cellEndDate = row.getCell(4);
-            document.setEndData(String.valueOf(cellEndDate.getDateCellValue()));
-            Cell cellDaysUntilDue = row.getCell(5);
-            document.setDaysUntilOverdue((int)cellDaysUntilDue.getNumericCellValue());
-            workbook.write(new FileOutputStream(pathToExcelList));
-            workbook.close();
-            return document;
+            return new XSSFWorkbook(new FileInputStream(pathToExcelList)).getSheet(nameOfList);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<DocumentExcel> getExcelData() {
+        List<DocumentExcel> allData = new ArrayList<>();
+        Sheet sheet = getConnectionToExcelTable();
+        for (Row row : sheet) {
+            Iterator<Cell> cellIterator = row.cellIterator();
+            DocumentExcel document = new DocumentExcel();
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                setDocumentDataFromCell(document, cell);
+            }
+            allData.add(document);
+        }
+        documentExcelList = allData;
+        return allData;
     }
     private void addDocumentInExcel(Row row, DocumentExcel document, CellStyle dataStyle) {
         Cell cellCode = row.createCell(0);
@@ -112,24 +111,42 @@ public class DocumentExcelRepository {
         Cell cellDaysUntilDue = row.createCell(5);
         cellDaysUntilDue.setCellValue(document.getDaysUntilOverdue());
     }
-    public Sheet getConnectionToExcelTable() {
-        try {
-            return new XSSFWorkbook(new FileInputStream(pathToExcelList)).getSheet(nameOfList);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+    private void setDocumentDataFromCell(DocumentExcel document, Cell cell) {
+        int columnIndex = cell.getColumnIndex();
+        switch (columnIndex) {
+            case 0 -> document.setId(getCellValueAsInt(cell));
+            case 1 -> document.setNumberOfDocument(getCellValueAsInt(cell));
+            case 2 -> document.setKindOfDocument(getCellValueAsString(cell));
+            case 3 -> document.setStartData(getCellValueAsString(cell));
+            case 4 -> document.setEndData(getCellValueAsString(cell));
+            case 5 -> document.setDaysUntilOverdue(getCellValueAsInt(cell));
         }
+        System.out.println(cell);
     }
 
-    public List<DocumentExcel> documentExcelList() {
-        List<DocumentExcel> result = new ArrayList<>();
-        for (Row row : getConnectionToExcelTable()) {
-            if (row.getCell(row.getRowNum()) == null)
-                break;
-            result.add(getDocumentExcel(row.getRowNum() + 1));
+    private int getCellValueAsInt(Cell cell) {
+        if (cell == null) {
+            return 0;
         }
-        result.removeIf(documentExcel -> documentExcel.getId() == 0);
-        documentExcelList = result;
-        return result;
+
+        if (Objects.requireNonNull(cell.getCellType()) == CellType.NUMERIC) {
+            return (int) cell.getNumericCellValue();
+        }
+        return 0;
+    }
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+
+        if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
+            return cell.getStringCellValue();
+        }
+        else {
+            return cell.getDateCellValue().toString();
+        }
     }
 
     private Row findEmptyRow(Sheet sheet) {

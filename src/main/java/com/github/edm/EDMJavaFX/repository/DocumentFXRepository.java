@@ -64,7 +64,7 @@ public class DocumentFXRepository {
         }
     }
     public ObservableList<DocumentFX> getExcelTableData() {
-        List<DocumentExcel> documentExcelList = documentExcelRepository.documentExcelList();
+        List<DocumentExcel> documentExcelList = documentExcelRepository.getExcelData();
         ObservableList<DocumentFX> documentFXObservableList = FXCollections.observableArrayList();
 
         for(DocumentExcel documentExcel : documentExcelList) {
