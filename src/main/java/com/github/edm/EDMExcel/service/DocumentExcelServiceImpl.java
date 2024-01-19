@@ -2,7 +2,8 @@ package com.github.edm.EDMExcel.service;
 
 import com.github.edm.EDMExcel.repository.DocumentExcelRepository;
 import com.github.edm.EDMExcel.repository.entity.DocumentExcel;
-import org.apache.poi.ss.usermodel.Sheet;
+
+import java.util.List;
 
 public class DocumentExcelServiceImpl implements DocumentExcelService {
 
@@ -11,8 +12,6 @@ public class DocumentExcelServiceImpl implements DocumentExcelService {
     public DocumentExcelServiceImpl(DocumentExcelRepository documentExcelRepository) {
         this.documentExcelRepository = documentExcelRepository;
     }
-
-
     @Override
     public void saveDocument(DocumentExcel documentExcel) {
         documentExcelRepository.saveDocument(documentExcel);
@@ -29,13 +28,7 @@ public class DocumentExcelServiceImpl implements DocumentExcelService {
     }
 
     @Override
-    public DocumentExcel getDocument(int id) {
-        return documentExcelRepository.getDocumentExcel(id);
+    public List<DocumentExcel> excelData() {
+        return documentExcelRepository.getExcelData();
     }
-
-    @Override
-    public Sheet getConnectionToExcelTable() {
-        return documentExcelRepository.getConnectionToExcelTable();
-    }
-
 }
