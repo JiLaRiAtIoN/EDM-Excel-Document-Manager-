@@ -40,7 +40,8 @@ public class UI {
         tableView.getColumns().addAll(codeCol, documentNumberCol, documentTypeCol, signingDateCol,
                 endDateCol, daysUntilDueCol);
 
-        tableView.setItems(documentFXService.getExcelTableData());
+        documentFXService.getExcelTableData();
+        tableView.setItems(documentFXService.getData());
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -121,8 +122,10 @@ public class UI {
         TextField codeField = new TextField(String.valueOf(documentFX.getCode()));
         TextField documentNumberField = new TextField(String.valueOf(documentFX.getDocumentNumber()));
         TextField documentTypeField = new TextField(documentFX.getDocumentType());
-        DatePicker signingDatePicker = new DatePicker(LocalDate.parse(documentFX.getSigningDate(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-        DatePicker endDatePicker = new DatePicker(LocalDate.parse(documentFX.getEndDate(), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        DatePicker signingDatePicker = new DatePicker(LocalDate.parse(documentFX.getSigningDate(),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        DatePicker endDatePicker = new DatePicker(LocalDate.parse(documentFX.getEndDate(),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")));
         TextField daysUntilDueField = new TextField(String.valueOf(documentFX.getDaysUntilDue()));
 
         grid.add(new Label("Код:"), 0, 0);
@@ -155,7 +158,7 @@ public class UI {
 
         Button deleteButton = new Button("Удалить");
         deleteButton.setOnAction(event -> {
-            documentFXService.getData().remove(documentFX);
+            documentFXService.deleteDocument(documentFX);
             editDialog.close();
         });
 
