@@ -6,8 +6,8 @@
 
     <groupId>com.github</groupId>
     <artifactId>EDM</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>JavaFXExample</name>
+    <version>0.3.0-SNAPSHOT</version>
+    <name>EDM</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
