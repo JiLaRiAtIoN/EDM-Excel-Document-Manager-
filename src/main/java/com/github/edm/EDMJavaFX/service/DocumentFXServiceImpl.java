@@ -39,8 +39,13 @@ public class DocumentFXServiceImpl implements DocumentFXService {
         );
     }
     @Override
-    public ObservableList<DocumentFX> getExcelTableData() {
-        return documentFXRepository.getExcelTableData();
+    public void getExcelTableData() {
+        documentFXRepository.getExcelTableData();
+    }
+
+    @Override
+    public void deleteDocument(DocumentFX documentFX) {
+        documentFXRepository.deleteDocument(documentFX);
     }
 
     @Override

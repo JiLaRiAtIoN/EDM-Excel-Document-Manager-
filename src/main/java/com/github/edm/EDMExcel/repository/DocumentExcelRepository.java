@@ -40,7 +40,7 @@ public class DocumentExcelRepository {
             DataFormat format = workbook.createDataFormat();
             CellStyle dataStyle = workbook.createCellStyle();
             dataStyle.setDataFormat(format.getFormat("dd.mm.yyyy"));
-            Row row = sheet.getRow(updatedDocumentExcel.getId());
+            Row row = sheet.getRow(updatedDocumentExcel.getId() - 1);
             addDocumentInExcel(row, updatedDocumentExcel, dataStyle);
             workbook.write(new FileOutputStream(pathToExcelList));
             workbook.close();
@@ -49,7 +49,7 @@ public class DocumentExcelRepository {
         }
     }
     public void deleteDocument(DocumentExcel documentExcel) {
-        int rowToDelete = documentExcel.getId();
+        int rowToDelete = documentExcel.getId() - 1;
         Sheet sheet = getConnectionToExcelTable();
         if (rowToDelete >= 0 && rowToDelete <= sheet.getLastRowNum()) {
             Row row = sheet.getRow(rowToDelete);
@@ -90,6 +90,8 @@ public class DocumentExcelRepository {
                 Cell cell = cellIterator.next();
                 setDocumentDataFromCell(document, cell);
             }
+            if(document.getId() == 0)
+                continue;
             allData.add(document);
         }
         documentExcelList = allData;
@@ -122,7 +124,6 @@ public class DocumentExcelRepository {
             case 4 -> document.setEndData(getCellValueAsString(cell));
             case 5 -> document.setDaysUntilOverdue(getCellValueAsInt(cell));
         }
-        System.out.println(cell);
     }
 
     private int getCellValueAsInt(Cell cell) {
@@ -143,23 +144,14 @@ public class DocumentExcelRepository {
 
         if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
             return cell.getStringCellValue();
-        }
-        else {
-            return cell.getDateCellValue().toString();
+        } else {
+            return cell.toString();
         }
     }
-
     private Row findEmptyRow(Sheet sheet) {
-        for (Row row : sheet) {
-            boolean isEmpty = true;
-            for (Cell cell : row) {
-                if (cell != null && cell.getCellType() != CellType.BLANK) {
-                    isEmpty = false;
-                    break;
-                }
-            }
-            if (isEmpty) {
-                return row;
+        for(Row row : sheet) {
+            if(row.getCell(0) == null) {
+                return sheet.createRow(row.getRowNum());
             }
         }
         return null;

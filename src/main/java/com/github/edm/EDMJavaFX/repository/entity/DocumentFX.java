@@ -11,7 +11,8 @@ public class DocumentFX {
     private final StringProperty endDate;
     private final IntegerProperty daysUntilDue;
 
-    public DocumentFX(Integer code, Integer documentNumber, String documentType, String signingDate, String endDate, Integer daysUntilDue) {
+    public DocumentFX(Integer code, Integer documentNumber, String documentType, String signingDate, String endDate,
+                      Integer daysUntilDue) {
         this.code = new SimpleIntegerProperty(code);
         this.documentNumber = new SimpleIntegerProperty(documentNumber);
         this.documentType = new SimpleStringProperty(documentType);

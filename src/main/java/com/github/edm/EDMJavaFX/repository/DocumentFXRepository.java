@@ -56,6 +56,16 @@ public class DocumentFXRepository {
             documentFX.setEndDate(endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             documentFX.setDaysUntilDue(daysUntilDueInt);
 
+            DocumentExcel documentExcel = new DocumentExcel(
+                    Integer.parseInt(code),
+                    Integer.parseInt(documentNumber),
+                    documentType,
+                    signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                    Integer.parseInt(daysUntilDue)
+            );
+            documentExcelRepository.updateDocument(documentExcel);
+
             // Обновляем таблицу
             tableView.refresh();
         } catch (NumberFormatException e) {
@@ -63,7 +73,7 @@ public class DocumentFXRepository {
             e.printStackTrace();
         }
     }
-    public ObservableList<DocumentFX> getExcelTableData() {
+    public void getExcelTableData() {
         List<DocumentExcel> documentExcelList = documentExcelRepository.getExcelData();
         ObservableList<DocumentFX> documentFXObservableList = FXCollections.observableArrayList();
 
@@ -78,7 +88,18 @@ public class DocumentFXRepository {
             );
         }
         data = documentFXObservableList;
-        return documentFXObservableList;
+    }
+
+    public void deleteDocument(DocumentFX documentFX) {
+        getData().remove(documentFX);
+        documentExcelRepository.deleteDocument(new DocumentExcel(
+                documentFX.getCode(),
+                documentFX.getDocumentNumber(),
+                documentFX.getDocumentType(),
+                documentFX.getSigningDate(),
+                documentFX.getEndDate(),
+                documentFX.getDaysUntilDue()
+        ));
     }
 
     public ObservableList<DocumentFX> getData() {
