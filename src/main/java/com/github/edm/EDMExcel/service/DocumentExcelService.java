@@ -8,6 +8,6 @@ import java.util.List;
 public interface DocumentExcelService {
     void saveDocument(DocumentExcel documentExcel);
     void updateDocument(DocumentExcel updatedDocumentExcel);
-    void deleteDocument(DocumentExcel documentExcel);
+    void deleteDocument(Integer id);
     List<DocumentExcel> excelData();
 }
