@@ -1,6 +1,6 @@
 package com.github.edm;
 
-import com.github.edm.EDMJavaFX.nodes.UI;
+import com.github.edm.EDMJavaFX.components.UI;
 import com.github.edm.EDMJavaFX.repository.entity.DocumentFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -14,7 +14,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         UI UI = new UI();
 
-        TableView<DocumentFX> tableView = UI.TableView();
+        TableView<DocumentFX> tableView = UI.tableView();
         Button addButton = UI.createAddButton();
         VBox vBox = new VBox(tableView, addButton);
 
@@ -24,7 +24,6 @@ public class Main extends Application {
 
         stage.show();
     }
-
     public static void main(String[] args) {
         launch(args);
     }

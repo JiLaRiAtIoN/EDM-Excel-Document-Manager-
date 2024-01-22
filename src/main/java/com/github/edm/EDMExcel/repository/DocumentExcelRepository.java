@@ -40,7 +40,7 @@ public class DocumentExcelRepository {
             DataFormat format = workbook.createDataFormat();
             CellStyle dataStyle = workbook.createCellStyle();
             dataStyle.setDataFormat(format.getFormat("dd.mm.yyyy"));
-            Row row = sheet.getRow(updatedDocumentExcel.getId() - 1);
+            Row row = sheet.getRow(updatedDocumentExcel.getId());
             addDocumentInExcel(row, updatedDocumentExcel, dataStyle);
             workbook.write(new FileOutputStream(pathToExcelList));
             workbook.close();
@@ -48,28 +48,19 @@ public class DocumentExcelRepository {
             throw new RuntimeException(e);
         }
     }
-    public void deleteDocument(DocumentExcel documentExcel) {
-        int rowToDelete = documentExcel.getId() - 1;
-        Sheet sheet = getConnectionToExcelTable();
-        if (rowToDelete >= 0 && rowToDelete <= sheet.getLastRowNum()) {
+    public void deleteDocument(Integer id) {
+        try {
+            Workbook workbook = new XSSFWorkbook(new FileInputStream(pathToExcelList));
+            Sheet sheet = workbook.getSheet(nameOfList);
+            int rowToDelete = id;
             Row row = sheet.getRow(rowToDelete);
             if (row != null) {
                 sheet.removeRow(row);
             }
-        }
-        for (int rowNum = rowToDelete + 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
-            Row row = sheet.getRow(rowNum);
-            Row rowAbove = sheet.getRow(rowNum - 1);
-            if (row != null && rowAbove != null) {
-                for (int cellNum = 0; cellNum < row.getLastCellNum(); cellNum++) {
-                    Cell cell = row.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    Cell cellAbove = rowAbove.getCell(cellNum, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    cellAbove.setCellValue(cell.getStringCellValue());
-                }
-            }
-        }
-        if (sheet.getLastRowNum() >= 0) {
-            sheet.removeRow(sheet.getRow(sheet.getLastRowNum()));
+            workbook.write(new FileOutputStream(pathToExcelList));
+            workbook.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
     public Sheet getConnectionToExcelTable() {
@@ -90,16 +81,24 @@ public class DocumentExcelRepository {
                 Cell cell = cellIterator.next();
                 setDocumentDataFromCell(document, cell);
             }
-            if(document.getId() == 0)
+            if(document.getNumberOfDocument() == 0)
                 continue;
             allData.add(document);
         }
         documentExcelList = allData;
         return allData;
     }
+    public Row findEmptyRow(Sheet sheet) {
+        for(Row row : sheet) {
+            if(row.getCell(0) == null) {
+                return sheet.createRow(row.getRowNum());
+            }
+        }
+        return null;
+    }
     private void addDocumentInExcel(Row row, DocumentExcel document, CellStyle dataStyle) {
         Cell cellCode = row.createCell(0);
-        cellCode.setCellValue(document.getId());
+        cellCode.setCellValue(row.getRowNum());
         Cell cellNumberOfDocument = row.createCell(1);
         cellNumberOfDocument.setCellValue(document.getNumberOfDocument());
         Cell cellKindOfDocument = row.createCell(2);
@@ -147,13 +146,5 @@ public class DocumentExcelRepository {
         } else {
             return cell.toString();
         }
-    }
-    private Row findEmptyRow(Sheet sheet) {
-        for(Row row : sheet) {
-            if(row.getCell(0) == null) {
-                return sheet.createRow(row.getRowNum());
-            }
-        }
-        return null;
     }
 }

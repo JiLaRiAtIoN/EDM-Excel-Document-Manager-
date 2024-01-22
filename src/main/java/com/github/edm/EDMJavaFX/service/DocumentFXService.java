@@ -7,7 +7,7 @@ import javafx.scene.control.TableView;
 import java.time.LocalDate;
 
 public interface DocumentFXService {
-    void addDocument(String code, String documentNumber, String documentType, LocalDate signingDate,
+    void addDocument(String documentNumber, String documentType, LocalDate signingDate,
                      LocalDate endDate, String daysUntilDue);
 
     void editDocument(DocumentFX documentFX, String code, String documentNumber, String documentType,

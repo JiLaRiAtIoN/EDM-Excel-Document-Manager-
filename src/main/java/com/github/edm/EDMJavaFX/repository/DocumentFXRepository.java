@@ -15,11 +15,13 @@ public class DocumentFXRepository {
     ObservableList<DocumentFX> data;
     private final DocumentExcelRepository documentExcelRepository = new DocumentExcelRepository();
 
-    public void addDocumentFromDialog(String code, String documentNumber, String documentType, LocalDate signingDate,
+    public void addDocumentFromDialog(String documentNumber, String documentType, LocalDate signingDate,
                                       LocalDate endDate, String daysUntilDue) {
+        int code = documentExcelRepository.findEmptyRow(
+                documentExcelRepository.getConnectionToExcelTable()).getRowNum();
         DocumentExcel documentExcel =
                 new DocumentExcel(
-                        Integer.parseInt(code),
+                        code,
                         Integer.parseInt(documentNumber),
                         documentType,
                         signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
@@ -29,7 +31,7 @@ public class DocumentFXRepository {
         documentExcelRepository.saveDocument(documentExcel);
         try {
             DocumentFX documentFX = new DocumentFX(
-                    Integer.parseInt(code),
+                    code,
                     Integer.parseInt(documentNumber),
                     documentType,
                     signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
@@ -66,10 +68,8 @@ public class DocumentFXRepository {
             );
             documentExcelRepository.updateDocument(documentExcel);
 
-            // Обновляем таблицу
             tableView.refresh();
         } catch (NumberFormatException e) {
-            // Обработка ошибок при вводе данных
             e.printStackTrace();
         }
     }
@@ -92,14 +92,7 @@ public class DocumentFXRepository {
 
     public void deleteDocument(DocumentFX documentFX) {
         getData().remove(documentFX);
-        documentExcelRepository.deleteDocument(new DocumentExcel(
-                documentFX.getCode(),
-                documentFX.getDocumentNumber(),
-                documentFX.getDocumentType(),
-                documentFX.getSigningDate(),
-                documentFX.getEndDate(),
-                documentFX.getDaysUntilDue()
-        ));
+        documentExcelRepository.deleteDocument(documentFX.getCode());
     }
 
     public ObservableList<DocumentFX> getData() {

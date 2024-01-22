@@ -12,10 +12,9 @@ public class DocumentFXServiceImpl implements DocumentFXService {
     private final DocumentFXRepository documentFXRepository = new DocumentFXRepository();
 
     @Override
-    public void addDocument(String code, String documentNumber, String documentType, LocalDate signingDate,
+    public void addDocument(String documentNumber, String documentType, LocalDate signingDate,
                             LocalDate endDate, String daysUntilDue) {
         documentFXRepository.addDocumentFromDialog(
-                code,
                 documentNumber,
                 documentType,
                 signingDate,

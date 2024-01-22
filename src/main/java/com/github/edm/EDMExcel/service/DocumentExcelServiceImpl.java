@@ -23,8 +23,8 @@ public class DocumentExcelServiceImpl implements DocumentExcelService {
     }
 
     @Override
-    public void deleteDocument(DocumentExcel documentExcel) {
-        documentExcelRepository.deleteDocument(documentExcel);
+    public void deleteDocument(Integer id) {
+        documentExcelRepository.deleteDocument(id);
     }
 
     @Override
