@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.5.0-SNAPSHOT
+
+* EDM-6: added dynamic change of days until a document is overdue
+* EDM-6: Improved overall program performance
+
 ## 0.4.0-SNAPSHOT
 
 * EDM-5: crud functionality implemented, RELEASE_NOTES.md added
