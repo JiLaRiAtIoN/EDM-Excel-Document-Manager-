@@ -18,7 +18,7 @@ public class Main extends Application {
         Button addButton = UI.createAddButton();
         VBox vBox = new VBox(tableView, addButton);
 
-        Scene scene = new Scene(vBox, 800, 800);
+        Scene scene = new Scene(vBox, 615, 450);
 
         stage.setScene(scene);
 

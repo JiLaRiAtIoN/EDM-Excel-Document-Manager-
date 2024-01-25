@@ -2,7 +2,6 @@ package com.github.edm.EDMJavaFX.service;
 
 import com.github.edm.EDMJavaFX.repository.DocumentFXRepository;
 import com.github.edm.EDMJavaFX.repository.entity.DocumentFX;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 
 import java.time.LocalDate;
@@ -13,12 +12,12 @@ public class DocumentFXServiceImpl implements DocumentFXService {
 
     @Override
     public void addDocument(String documentNumber, String documentType, LocalDate signingDate,
-                            LocalDate endDate, String daysUntilDue) {
+                            LocalDate endDate) {
         documentFXRepository.addDocumentFromDialog(
                 documentNumber,
                 documentType,
                 signingDate,
-                endDate, daysUntilDue
+                endDate
         );
     }
 
@@ -45,15 +44,5 @@ public class DocumentFXServiceImpl implements DocumentFXService {
     @Override
     public void deleteDocument(DocumentFX documentFX) {
         documentFXRepository.deleteDocument(documentFX);
-    }
-
-    @Override
-    public ObservableList<DocumentFX> getData() {
-        return documentFXRepository.getData();
-    }
-
-    @Override
-    public void setData(ObservableList<DocumentFX> data) {
-        documentFXRepository.setData(data);
     }
 }
