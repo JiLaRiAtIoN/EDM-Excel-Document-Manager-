@@ -7,10 +7,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class DocumentExcelRepository {
     private final static String pathToExcelList = "./ExampleList.xlsx";
@@ -83,6 +83,7 @@ public class DocumentExcelRepository {
             }
             if(document.getNumberOfDocument() == 0)
                 continue;
+            calculateDaysUntilDue(document, row);
             allData.add(document);
         }
         documentExcelList = allData;
@@ -109,8 +110,6 @@ public class DocumentExcelRepository {
         Cell cellEndDate = row.createCell(4);
         cellEndDate.setCellStyle(dataStyle);
         cellEndDate.setCellValue(document.getEndData());
-        Cell cellDaysUntilDue = row.createCell(5);
-        cellDaysUntilDue.setCellValue(document.getDaysUntilOverdue());
     }
 
     private void setDocumentDataFromCell(DocumentExcel document, Cell cell) {
@@ -121,7 +120,6 @@ public class DocumentExcelRepository {
             case 2 -> document.setKindOfDocument(getCellValueAsString(cell));
             case 3 -> document.setStartData(getCellValueAsString(cell));
             case 4 -> document.setEndData(getCellValueAsString(cell));
-            case 5 -> document.setDaysUntilOverdue(getCellValueAsInt(cell));
         }
     }
 
@@ -135,7 +133,6 @@ public class DocumentExcelRepository {
         }
         return 0;
     }
-
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";
@@ -143,8 +140,12 @@ public class DocumentExcelRepository {
 
         if (Objects.requireNonNull(cell.getCellType()) == CellType.STRING) {
             return cell.getStringCellValue();
-        } else {
-            return cell.toString();
         }
+        return null;
+    }
+    private void calculateDaysUntilDue(DocumentExcel documentExcel, Row row) {
+        documentExcel.setDaysUntilOverdue((int) ChronoUnit.DAYS.between(LocalDate.now(),
+                LocalDate.parse(row.getCell(4).toString(),
+                        DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
 }

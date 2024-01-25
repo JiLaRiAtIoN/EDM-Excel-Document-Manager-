@@ -34,7 +34,7 @@ public class TableComponent {
                 endDateCol, daysUntilDueCol);
 
         documentFXService.getExcelTableData();
-        tableView.setItems(documentFXService.getData());
+        tableView.setItems(DocumentFXService.getData());
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {

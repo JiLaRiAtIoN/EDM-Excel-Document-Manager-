@@ -9,38 +9,34 @@ import javafx.scene.control.TableView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class DocumentFXRepository {
-    ObservableList<DocumentFX> data;
+    public static ObservableList<DocumentFX> data;
     private final DocumentExcelRepository documentExcelRepository = new DocumentExcelRepository();
 
     public void addDocumentFromDialog(String documentNumber, String documentType, LocalDate signingDate,
-                                      LocalDate endDate, String daysUntilDue) {
+                                      LocalDate endDate) {
         int code = documentExcelRepository.findEmptyRow(
                 documentExcelRepository.getConnectionToExcelTable()).getRowNum();
-        DocumentExcel documentExcel =
-                new DocumentExcel(
-                        code,
-                        Integer.parseInt(documentNumber),
-                        documentType,
-                        signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                        endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                        Integer.parseInt(daysUntilDue)
-        );
-        documentExcelRepository.saveDocument(documentExcel);
-        try {
-            DocumentFX documentFX = new DocumentFX(
-                    code,
-                    Integer.parseInt(documentNumber),
-                    documentType,
-                    signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                    endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                    Integer.parseInt(daysUntilDue));
-            data.add(documentFX);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
+        int days = calculateDaysUntilDue(signingDate, endDate);
+        documentExcelRepository.saveDocument(new DocumentExcel(
+                code,
+                Integer.parseInt(documentNumber),
+                documentType,
+                signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                days
+        ));
+        data.add(new DocumentFX(
+                code,
+                Integer.parseInt(documentNumber),
+                documentType,
+                signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                days
+        ));
     }
 
     public void editDocumentFromDialog(DocumentFX documentFX, String code, String documentNumber, String documentType,
@@ -56,7 +52,7 @@ public class DocumentFXRepository {
             documentFX.setDocumentType(documentType);
             documentFX.setSigningDate(signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             documentFX.setEndDate(endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-            documentFX.setDaysUntilDue(daysUntilDueInt);
+            documentFX.setDaysUntilDue(calculateDaysUntilDue(signingDate, endDate));
 
             DocumentExcel documentExcel = new DocumentExcel(
                     Integer.parseInt(code),
@@ -91,15 +87,18 @@ public class DocumentFXRepository {
     }
 
     public void deleteDocument(DocumentFX documentFX) {
-        getData().remove(documentFX);
+        data.remove(documentFX);
         documentExcelRepository.deleteDocument(documentFX.getCode());
     }
 
-    public ObservableList<DocumentFX> getData() {
-        return data;
+    private int calculateDaysUntilDue(LocalDate signingDate, LocalDate dueDate) {
+        if (signingDate == null || dueDate == null || dueDate.isBefore(signingDate)) {
+            throw new IllegalArgumentException("Invalid dates");
+        }
+        return (int) ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
     }
 
-    public void setData(ObservableList<DocumentFX> data) {
-        this.data = data;
+    public static ObservableList<DocumentFX> getData() {
+        return data;
     }
 }

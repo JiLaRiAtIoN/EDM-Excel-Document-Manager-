@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 
 public class AddButtonComponent {
     private final DocumentFXService documentFXService = new DocumentFXServiceImpl();
+    private final TableComponent tableComponent = new TableComponent();
 
     public Button createAddButton() {
         Button addButton = new Button("Добавить");
@@ -39,6 +40,7 @@ public class AddButtonComponent {
         TextField daysUntilDueField = new TextField();
 
         codeField.setEditable(false);
+        daysUntilDueField.setEditable(false);
 
         grid.add(new Label("Код:"), 0, 0);
         grid.add(codeField, 1, 0);
@@ -59,8 +61,7 @@ public class AddButtonComponent {
                     documentNumberField.getText(),
                     documentTypeField.getText(),
                     signingDatePicker.getValue(),
-                    endDatePicker.getValue(),
-                    daysUntilDueField.getText()
+                    endDatePicker.getValue()
             );
             addDialog.close();
         });
