@@ -5,6 +5,7 @@ import com.github.edm.EDMExcel.repository.entity.DocumentExcel;
 import com.github.edm.EDMJavaFX.repository.entity.DocumentFX;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 
 import java.time.LocalDate;
@@ -18,9 +19,17 @@ public class DocumentFXRepository {
 
     public void addDocumentFromDialog(String documentNumber, String documentType, LocalDate signingDate,
                                       LocalDate endDate) {
-        int code = documentExcelRepository.findEmptyRow(
-                documentExcelRepository.getConnectionToExcelTable()).getRowNum();
+        int code = documentExcelRepository.findEmptyRow(documentExcelRepository.getConnectionToExcelTable()).getRowNum();
         int days = calculateDaysUntilDue(signingDate, endDate);
+        DocumentFX documentFX = new DocumentFX(
+                code,
+                Integer.parseInt(documentNumber),
+                documentType,
+                signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                days);
+        if(days == 15 || days == 10 || days == 5)
+            expirationMessage(documentFX);
         documentExcelRepository.saveDocument(new DocumentExcel(
                 code,
                 Integer.parseInt(documentNumber),
@@ -29,14 +38,7 @@ public class DocumentFXRepository {
                 endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 days
         ));
-        data.add(new DocumentFX(
-                code,
-                Integer.parseInt(documentNumber),
-                documentType,
-                signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                days
-        ));
+        data.add(documentFX);
     }
 
     public void editDocumentFromDialog(DocumentFX documentFX, String code, String documentNumber, String documentType,
@@ -98,7 +100,12 @@ public class DocumentFXRepository {
         return (int) ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
     }
 
-    public static ObservableList<DocumentFX> getData() {
-        return data;
+    private void expirationMessage(DocumentFX documentFX) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Уведомление");
+        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'"+ documentFX.getDocumentType() +
+                "'" + " составляет " + documentFX.getDaysUntilDue() + " дней");
+        alert.setContentText("Пожалуйста, проверьте документы!");
+        alert.showAndWait();
     }
 }

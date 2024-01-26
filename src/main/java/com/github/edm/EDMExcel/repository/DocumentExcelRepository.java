@@ -1,6 +1,7 @@
 package com.github.edm.EDMExcel.repository;
 
 import com.github.edm.EDMExcel.repository.entity.DocumentExcel;
+import javafx.scene.control.Alert;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -15,7 +16,6 @@ import java.util.*;
 public class DocumentExcelRepository {
     private final static String pathToExcelList = "./ExampleList.xlsx";
     private final static String nameOfList = "Документы";
-    public List<DocumentExcel> documentExcelList;
 
     public void saveDocument(DocumentExcel documentExcel) {
         try {
@@ -84,18 +84,20 @@ public class DocumentExcelRepository {
             if(document.getNumberOfDocument() == 0)
                 continue;
             calculateDaysUntilDue(document, row);
+            if(document.getDaysUntilOverdue() == 15 || document.getDaysUntilOverdue() == 10 ||
+                    document.getDaysUntilOverdue() == 5)
+                expirationMessage(document);
             allData.add(document);
         }
-        documentExcelList = allData;
         return allData;
     }
     public Row findEmptyRow(Sheet sheet) {
         for(Row row : sheet) {
-            if(row.getCell(0) == null) {
-                return sheet.createRow(row.getRowNum());
+            if(row.getCell(0) == null || row.getCell(0).toString().trim().isEmpty()) {
+                return row;
             }
         }
-        return null;
+        return sheet.createRow(sheet.getLastRowNum() + 1);
     }
     private void addDocumentInExcel(Row row, DocumentExcel document, CellStyle dataStyle) {
         Cell cellCode = row.createCell(0);
@@ -147,5 +149,13 @@ public class DocumentExcelRepository {
         documentExcel.setDaysUntilOverdue((int) ChronoUnit.DAYS.between(LocalDate.now(),
                 LocalDate.parse(row.getCell(4).toString(),
                         DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+    }
+    private void expirationMessage(DocumentExcel documentExcel) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Уведомление");
+        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'"+ documentExcel.getKindOfDocument() +
+                "'" + " составляет " + documentExcel.getDaysUntilOverdue() + " дней");
+        alert.setContentText("Пожалуйста, проверьте документы!");
+        alert.showAndWait();
     }
 }

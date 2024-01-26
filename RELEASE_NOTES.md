@@ -1,5 +1,10 @@
 # Release Notes
 
+## 0.6.0-SNAPSHOT
+
+* EDM-7: added warnings about document overdue
+* EDM-7: updated README.md
+
 ## 0.5.0-SNAPSHOT
 
 * EDM-6: added dynamic change of days until a document is overdue

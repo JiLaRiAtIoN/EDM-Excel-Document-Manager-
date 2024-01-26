@@ -36,6 +36,7 @@ public class EditAndDeleteButtonsComponent {
         TextField daysUntilDueField = new TextField(String.valueOf(documentFX.getDaysUntilDue()));
 
         codeField.setEditable(false);
+        daysUntilDueField.setEditable(false);
 
         grid.add(new Label("Код:"), 0, 0);
         grid.add(codeField, 1, 0);
