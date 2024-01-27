@@ -33,6 +33,7 @@ public class DocumentExcelRepository {
             throw new RuntimeException(e);
         }
     }
+
     public void updateDocument(DocumentExcel updatedDocumentExcel) {
         try {
             Workbook workbook = new XSSFWorkbook(new FileInputStream(pathToExcelList));
@@ -48,6 +49,7 @@ public class DocumentExcelRepository {
             throw new RuntimeException(e);
         }
     }
+
     public void deleteDocument(Integer id) {
         try {
             Workbook workbook = new XSSFWorkbook(new FileInputStream(pathToExcelList));
@@ -63,6 +65,7 @@ public class DocumentExcelRepository {
             throw new RuntimeException(e);
         }
     }
+
     public Sheet getConnectionToExcelTable() {
         try {
             return new XSSFWorkbook(new FileInputStream(pathToExcelList)).getSheet(nameOfList);
@@ -81,24 +84,26 @@ public class DocumentExcelRepository {
                 Cell cell = cellIterator.next();
                 setDocumentDataFromCell(document, cell);
             }
-            if(document.getNumberOfDocument() == 0)
+            if (document.getNumberOfDocument() == 0)
                 continue;
             calculateDaysUntilDue(document, row);
-            if(document.getDaysUntilOverdue() == 15 || document.getDaysUntilOverdue() == 10 ||
+            if (document.getDaysUntilOverdue() == 15 || document.getDaysUntilOverdue() == 10 ||
                     document.getDaysUntilOverdue() == 5)
                 expirationMessage(document);
             allData.add(document);
         }
         return allData;
     }
+
     public Row findEmptyRow(Sheet sheet) {
-        for(Row row : sheet) {
-            if(row.getCell(0) == null || row.getCell(0).toString().trim().isEmpty()) {
+        for (Row row : sheet) {
+            if (row.getCell(0) == null || row.getCell(0).toString().trim().isEmpty()) {
                 return row;
             }
         }
         return sheet.createRow(sheet.getLastRowNum() + 1);
     }
+
     private void addDocumentInExcel(Row row, DocumentExcel document, CellStyle dataStyle) {
         Cell cellCode = row.createCell(0);
         cellCode.setCellValue(row.getRowNum());
@@ -135,6 +140,7 @@ public class DocumentExcelRepository {
         }
         return 0;
     }
+
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";
@@ -145,15 +151,17 @@ public class DocumentExcelRepository {
         }
         return null;
     }
+
     private void calculateDaysUntilDue(DocumentExcel documentExcel, Row row) {
         documentExcel.setDaysUntilOverdue((int) ChronoUnit.DAYS.between(LocalDate.now(),
                 LocalDate.parse(row.getCell(4).toString(),
                         DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
     }
+
     private void expirationMessage(DocumentExcel documentExcel) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Уведомление");
-        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'"+ documentExcel.getKindOfDocument() +
+        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'" + documentExcel.getKindOfDocument() +
                 "'" + " составляет " + documentExcel.getDaysUntilOverdue() + " дней");
         alert.setContentText("Пожалуйста, проверьте документы!");
         alert.showAndWait();

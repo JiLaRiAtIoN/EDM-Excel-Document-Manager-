@@ -28,7 +28,7 @@ public class DocumentFXRepository {
                 signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 days);
-        if(days == 15 || days == 10 || days == 5)
+        if (days == 15 || days == 10 || days == 5)
             expirationMessage(documentFX);
         documentExcelRepository.saveDocument(new DocumentExcel(
                 code,
@@ -71,11 +71,12 @@ public class DocumentFXRepository {
             e.printStackTrace();
         }
     }
+
     public void getExcelTableData() {
         List<DocumentExcel> documentExcelList = documentExcelRepository.getExcelData();
         ObservableList<DocumentFX> documentFXObservableList = FXCollections.observableArrayList();
 
-        for(DocumentExcel documentExcel : documentExcelList) {
+        for (DocumentExcel documentExcel : documentExcelList) {
             documentFXObservableList.add(new DocumentFX(
                     documentExcel.getId(),
                     documentExcel.getNumberOfDocument(),
@@ -103,7 +104,7 @@ public class DocumentFXRepository {
     private void expirationMessage(DocumentFX documentFX) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Уведомление");
-        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'"+ documentFX.getDocumentType() +
+        alert.setHeaderText("Количество дней до конца просрочки у документа " + "'" + documentFX.getDocumentType() +
                 "'" + " составляет " + documentFX.getDaysUntilDue() + " дней");
         alert.setContentText("Пожалуйста, проверьте документы!");
         alert.showAndWait();
