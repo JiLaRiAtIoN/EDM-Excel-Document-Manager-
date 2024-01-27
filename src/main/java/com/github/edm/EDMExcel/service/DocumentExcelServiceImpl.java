@@ -12,6 +12,7 @@ public class DocumentExcelServiceImpl implements DocumentExcelService {
     public DocumentExcelServiceImpl(DocumentExcelRepository documentExcelRepository) {
         this.documentExcelRepository = documentExcelRepository;
     }
+
     @Override
     public void saveDocument(DocumentExcel documentExcel) {
         documentExcelRepository.saveDocument(documentExcel);

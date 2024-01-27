@@ -11,6 +11,7 @@ public class UI {
     public TableView<DocumentFX> tableView() {
         return tableComponent.tableView();
     }
+
     public Button createAddButton() {
         return addButtonComponent.createAddButton();
     }

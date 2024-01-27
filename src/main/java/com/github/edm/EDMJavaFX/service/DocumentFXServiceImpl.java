@@ -36,6 +36,7 @@ public class DocumentFXServiceImpl implements DocumentFXService {
                 tableView
         );
     }
+
     @Override
     public void getExcelTableData() {
         documentFXRepository.getExcelTableData();

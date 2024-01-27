@@ -73,7 +73,7 @@ public class EditAndDeleteButtonsComponent {
         });
 
         grid.add(saveButton, 0, 6, 2, 1);
-        grid.add(deleteButton, 1,6,2,1);
+        grid.add(deleteButton, 1, 6, 2, 1);
 
         Scene scene = new Scene(grid, 300, 250);
         editDialog.setScene(scene);

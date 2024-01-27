@@ -13,8 +13,11 @@ public interface DocumentFXService {
 
     void editDocument(DocumentFX documentFX, String code, String documentNumber, String documentType,
                       LocalDate signingDate, LocalDate endDate, String daysUntilDue, TableView<DocumentFX> tableView);
+
     void getExcelTableData();
+
     void deleteDocument(DocumentFX documentFX);
+
     static ObservableList<DocumentFX> getData() {
         return DocumentFXRepository.data;
     }
