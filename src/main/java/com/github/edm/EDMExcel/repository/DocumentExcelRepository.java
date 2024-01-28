@@ -88,7 +88,7 @@ public class DocumentExcelRepository {
                 continue;
             calculateDaysUntilDue(document, row);
             if (document.getDaysUntilOverdue() == 15 || document.getDaysUntilOverdue() == 10 ||
-                    document.getDaysUntilOverdue() == 5)
+                    document.getDaysUntilOverdue() == 5 || document.getDaysUntilOverdue() == 0)
                 expirationMessage(document);
             allData.add(document);
         }
@@ -153,9 +153,9 @@ public class DocumentExcelRepository {
     }
 
     private void calculateDaysUntilDue(DocumentExcel documentExcel, Row row) {
-        documentExcel.setDaysUntilOverdue((int) ChronoUnit.DAYS.between(LocalDate.now(),
-                LocalDate.parse(row.getCell(4).toString(),
-                        DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
+        int days = (int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(row.getCell(4).toString(),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        documentExcel.setDaysUntilOverdue(Math.max(days, 0));
     }
 
     private void expirationMessage(DocumentExcel documentExcel) {

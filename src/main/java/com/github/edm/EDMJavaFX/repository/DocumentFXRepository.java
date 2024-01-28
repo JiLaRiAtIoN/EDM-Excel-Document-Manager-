@@ -28,7 +28,7 @@ public class DocumentFXRepository {
                 signingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 days);
-        if (days == 15 || days == 10 || days == 5)
+        if (days == 15 || days == 10 || days == 5 || days == 0)
             expirationMessage(documentFX);
         documentExcelRepository.saveDocument(new DocumentExcel(
                 code,
@@ -47,7 +47,6 @@ public class DocumentFXRepository {
         try {
             Integer codeInt = Integer.parseInt(code);
             Integer documentNumberInt = Integer.parseInt(documentNumber);
-            Integer daysUntilDueInt = Integer.parseInt(daysUntilDue);
 
             documentFX.setCode(codeInt);
             documentFX.setDocumentNumber(documentNumberInt);
@@ -98,7 +97,8 @@ public class DocumentFXRepository {
         if (signingDate == null || dueDate == null || dueDate.isBefore(signingDate)) {
             throw new IllegalArgumentException("Invalid dates");
         }
-        return (int) ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        int days = (int) ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        return Math.max(days, 0);
     }
 
     private void expirationMessage(DocumentFX documentFX) {
